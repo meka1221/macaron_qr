@@ -12,7 +12,9 @@ void main() async {
   await Firebase.initializeApp();
   final prefs = await SharedPreferences.getInstance();
   final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
-
+  
+  print('Onboarding state: ${hasSeenOnboarding ? 'Seen' : 'Not seen'}');
+  
   runApp(MyApp(hasSeenOnboarding: hasSeenOnboarding));
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:macaron_qr/pages/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:macaron_qr/pages/home.dart';
+import 'package:macaron_qr/widgets/loading_animation.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -12,40 +13,52 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  bool _isLoading = false;
 
   final List<OnboardingItem> _items = [
     OnboardingItem(
-      title: 'Добро пожаловать в Macaronnaya!',
-      description: 'Ваши любимые десерты всего в нескольких шагах от вас. Мы предлагаем широкий выбор макарон, мадленов, круассанов и чизкейков.',
-      image: 'assets/images/curasan.jpg',
+      image: 'assets/images/ферреро-роше макаронс.jpg',
+      title: 'Добро пожаловать в Macaron QR!',
+      description: 'Ваш идеальный помощник для заказа вкусных десертов и кофе',
     ),
     OnboardingItem(
-      title: 'Большой выбор десертов',
-      description: 'Макароны, мадлены, круассаны, чизкейки и ароматный кофе - выбирайте то, что вам по душе. Все десерты готовятся из отборных ингредиентов.',
-      image: 'assets/images/1.jpg',
+      image: 'assets/images/кофе латте.jpg',
+      title: 'Быстрый заказ',
+      description: 'Выбирайте из широкого ассортимента макарон, десертов и кофе',
     ),
     OnboardingItem(
-      title: 'Удобный заказ',
-      description: 'Закажите любимые десерты с доставкой или заберите их в нашей кондитерской. Быстрая доставка и удобная оплата.',
-      image: 'assets/images/2.jpg',
+      image: 'assets/images/чизкейк шоколадный сан себастьян.jpg',
+      title: 'Избранное',
+      description: 'Сохраняйте любимые позиции в избранное для быстрого доступа',
     ),
     OnboardingItem(
-      title: 'Сохраняйте избранное',
-      description: 'Создайте аккаунт, чтобы сохранять любимые десерты и быстро заказывать их снова. Получайте бонусы за каждый заказ!',
-      image: 'assets/images/curasan.jpg',
+      image: 'assets/images/курасан классический.jpg',
+      title: 'Начните прямо сейчас!',
+      description: 'Создайте аккаунт или войдите, чтобы получить доступ ко всем функциям',
     ),
   ];
 
   Future<void> _completeOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('has_seen_onboarding', true);
-    
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const Home(),
-        ),
-      );
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('has_seen_onboarding', true);
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const Home()),
+        );
+      }
+    } catch (e) {
+      print('Error completing onboarding: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -53,37 +66,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(33, 35, 37, 1),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: _completeOnboarding,
-                child: const Text(
-                  'Пропустить',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: _items.length,
-                onPageChanged: (int page) {
-                  setState(() {
-                    _currentPage = page;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  return _buildPage(_items[index], index);
-                },
-              ),
-            ),
-            Padding(
+      body: Stack(
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            itemCount: _items.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return _buildPage(_items[index], index);
+            },
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,7 +100,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     height: 60,
                     width: 60,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: _isLoading ? null : () {
                         if (_currentPage < _items.length - 1) {
                           _pageController.nextPage(
                             duration: const Duration(milliseconds: 300),
@@ -114,18 +115,32 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         shape: const CircleBorder(),
                         padding: const EdgeInsets.all(15),
                       ),
-                      child: const Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
-                        size: 30,
-                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.arrow_forward,
+                              color: Colors.white,
+                              size: 30,
+                            ),
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          if (_isLoading)
+            Container(
+              color: Colors.black54,
+              child: const LoadingAnimation(),
+            ),
+        ],
       ),
     );
   }
@@ -185,6 +200,22 @@ class _OnboardingPageState extends State<OnboardingPage> {
         height: 300,
         width: double.infinity,
         fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          print('Error loading image: ${item.image}');
+          print('Error: $error');
+          return Container(
+            height: 300,
+            width: double.infinity,
+            color: Colors.grey[800],
+            child: const Center(
+              child: Icon(
+                Icons.error_outline,
+                color: Colors.white,
+                size: 50,
+              ),
+            ),
+          );
+        },
       ),
     );
   }

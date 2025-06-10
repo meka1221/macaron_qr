@@ -40,7 +40,7 @@ dependencies:
   firebase_analytics: ^10.10.0
   firebase_auth: ^4.16.0
   cloud_firestore: ^4.15.0
-
+  lottie: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -65,7 +65,12 @@ flutter:
   uses-material-design: true
 
   assets:
-         - assets/images/
+    - assets/images/
+    - assets/images/ферреро-роше макаронс.jpg
+    - assets/images/кофе латте.jpg
+    - assets/images/чизкейк шоколадный сан себастьян.jpg
+    - assets/images/курасан классический.jpg
+    - assets/animations/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

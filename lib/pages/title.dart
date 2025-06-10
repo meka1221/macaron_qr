@@ -9,7 +9,7 @@ class TitleW extends StatelessWidget {
       children: [
         SizedBox(width: 20,),
         Text(
-          'Find The best\ncoffee for you',
+          'Find The best\ndessert for you',
           style: TextStyle(
               fontSize: 35,
               fontWeight: FontWeight.bold,

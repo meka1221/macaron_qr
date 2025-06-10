@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:macaron_qr/models/favorites_provider.dart';
-import 'package:macaron_qr/pages/cards.dart';
+import 'package:macaron_qr/models/menu.dart';
 
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({super.key});
@@ -23,9 +23,7 @@ class FavoritesPage extends StatelessWidget {
       ),
       body: Consumer<FavoritesProvider>(
         builder: (context, favoritesProvider, child) {
-          final favorites = favoritesProvider.favorites;
-
-          if (favorites.isEmpty) {
+          if (favoritesProvider.favorites.isEmpty) {
             return const Center(
               child: Text(
                 'No favorites yet',
@@ -37,7 +35,53 @@ class FavoritesPage extends StatelessWidget {
             );
           }
 
-          return Cards(favorites);
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: favoritesProvider.favorites.length,
+            itemBuilder: (context, index) {
+              final item = favoritesProvider.favorites[index];
+              return Card(
+                color: const Color.fromRGBO(51, 54, 57, 1),
+                margin: const EdgeInsets.only(bottom: 16),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      item.image!,
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  title: Text(
+                    item.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  subtitle: Text(
+                    '${item.price} ₽',
+                    style: const TextStyle(
+                      color: Color.fromRGBO(209, 120, 66, 1),
+                      fontSize: 14,
+                    ),
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(
+                      Icons.favorite,
+                      color: Color.fromRGBO(209, 120, 66, 1),
+                    ),
+                    onPressed: () {
+                      favoritesProvider.toggleFavorite(item);
+                    },
+                  ),
+                ),
+              );
+            },
+          );
         },
       ),
     );

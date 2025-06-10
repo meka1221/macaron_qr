@@ -1,45 +1,104 @@
 import 'package:flutter/foundation.dart';
-import 'package:macaron_qr/models/user.dart';
+import 'package:macaron_qr/models/user.dart' as app_user;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthProvider with ChangeNotifier {
-  User? _user;
-  bool _isAuthenticated = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  app_user.User? _user;
+  bool _isLoading = false;
 
-  User? get user => _user;
-  bool get isAuthenticated => _isAuthenticated;
-
-  Future<bool> login(String email, String password) async {
-    // Здесь будет логика аутентификации
-    // Пока используем заглушку
-    if (email == 'test@test.com' && password == 'password') {
-      _user = User(
-        id: '1',
-        email: email,
-        name: 'Test User',
-      );
-      _isAuthenticated = true;
+  AuthProvider() {
+    _auth.authStateChanges().listen((User? user) {
+      if (user != null) {
+        _user = app_user.User(
+          id: user.uid,
+          email: user.email ?? '',
+          name: user.displayName ?? '',
+        );
+      } else {
+        _user = null;
+      }
       notifyListeners();
-      return true;
+    });
+  }
+
+  app_user.User? get user => _user;
+  bool get isAuthenticated => _user != null;
+  bool get isLoading => _isLoading;
+
+  Future<void> login(String email, String password) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      print('Login error: $e');
+      if (e is FirebaseAuthException) {
+        throw e.message ?? 'Ошибка входа';
+      }
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-    return false;
   }
 
-  Future<bool> register(String email, String password, String name) async {
-    // Здесь будет логика регистрации
-    // Пока используем заглушку
-    _user = User(
-      id: '1',
-      email: email,
-      name: name,
-    );
-    _isAuthenticated = true;
-    notifyListeners();
-    return true;
+  Future<void> register(String email, String password, String name) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      
+      print('Starting registration for email: $email');
+      
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      print('User created successfully: ${userCredential.user?.uid}');
+
+      if (userCredential.user != null) {
+        print('Creating user document in Firestore');
+        await _firestore.collection('users').doc(userCredential.user!.uid).set({
+          'name': name,
+          'email': email,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+        print('User document created successfully');
+      }
+    } catch (e) {
+      print('Registration error: $e');
+      if (e is FirebaseAuthException) {
+        print('Firebase Auth Error Code: ${e.code}');
+        print('Firebase Auth Error Message: ${e.message}');
+        throw e.message ?? 'Ошибка регистрации';
+      }
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
-  void logout() {
-    _user = null;
-    _isAuthenticated = false;
-    notifyListeners();
+  Future<void> logout() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      await _auth.signOut();
+    } catch (e) {
+      print('Logout error: $e');
+      if (e is FirebaseAuthException) {
+        throw e.message ?? 'Ошибка выхода';
+      }
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }
