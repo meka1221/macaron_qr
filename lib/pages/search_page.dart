@@ -12,14 +12,16 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   List<Menu> _filteredList = [];
-  List<Menu> _currentCategoryList = Menu.Cappuccino;
-  String _selectedCategory = 'Cappuccino';
+  List<Menu> _currentCategoryList = Menu.Macarons;
+  String _selectedCategory = 'Drinks';
 
   final List<Map<String, dynamic>> categories = [
-    {'name': 'Cappuccino', 'list': Menu.Cappuccino},
-    {'name': 'Hot Coffee', 'list': Menu.hotCoffee},
-    {'name': 'Latte', 'list': Menu.latte},
-    {'name': 'Cold Coffee', 'list': Menu.coldCoffee},
+    {'name': 'Macarons', 'list': Menu.Macarons},
+    {'name': 'Madlens', 'list': Menu.Madlens},
+    {'name': 'Croissants', 'list': Menu.Croissants},
+    {'name': 'Cheesecakes', 'list': Menu.Cheesecakes},
+    {'name': 'Coffee', 'list': Menu.Coffee},
+    {'name': 'Drinks', 'list': Menu.Drinks},
   ];
 
   @override
@@ -30,11 +32,19 @@ class _SearchPageState extends State<SearchPage> {
 
   void _filterProducts(String query) {
     setState(() {
-      _filteredList = _currentCategoryList
-          .where((item) =>
-      item.name.toLowerCase().contains(query.toLowerCase()) ||
-          item.description!.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      if (query.isEmpty) {
+        _filteredList = _currentCategoryList;
+      } else {
+        // Search across all categories
+        _filteredList = [];
+        for (var category in categories) {
+          final categoryList = category['list'] as List<Menu>;
+          final filteredCategoryItems = categoryList.where((item) =>
+              item.name.toLowerCase().contains(query.toLowerCase()) ||
+              item.description!.toLowerCase().contains(query.toLowerCase())).toList();
+          _filteredList.addAll(filteredCategoryItems);
+        }
+      }
     });
   }
 

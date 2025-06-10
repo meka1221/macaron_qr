@@ -1,58 +1,69 @@
 class Menu{
 
   String? title;
-  String? category;
   String? price;
   String? image;
   String? description;
   String? rating;
+  Map<String, String>? sizes; // Map of size to price
 
-  Menu(this.category,this.title,this.price,this.image,this.description,this.rating);
+  Menu(this.title,this.price,this.image,this.description,this.rating, {this.sizes});
 
   String get name => title ?? '';
 
-  static List<Menu> Cappuccino  =[
-    Menu('Cappuccino', 'With Oat Milk', '4.20', 'assets/images/1.jpg','Cappuccino is an espresso-based coffee drink that originated in Italy,and is traditionally prepared with equal parts double espresso, steamed milk, and steamed milk foam.','4.8'),
-    Menu('Cappuccino', 'With Chocolate', '3.14', 'assets/images/2.jpg','Cappuccino is an espresso-based coffee drink that originated in Italy,and is traditionally prepared with equal parts double espresso, steamed milk, and steamed milk foam.','4.7'),
-
+  static List<Menu> Macarons = [
+    Menu('Чизкейк-клубника', '210', 'assets/images/клубника-чизкейк макаронс.jpg', 'Нежный макарон с начинкой из чизкейка и свежей клубники', '4.8', sizes: {'Большой': '210', 'Маленький': '120'}),
+    Menu('Сникерс', '210', 'assets/images/сникерс.jpg', 'Шоколадный макарон с начинкой из карамели и арахиса', '4.7', sizes: {'Большой': '210', 'Маленький': '120'}),
+    Menu('Ферреро-роше', '210', 'assets/images/ферреро-роше макаронс.jpg', 'Шоколадный макарон с начинкой из пралине и фундука', '4.8', sizes: {'Большой': '210', 'Маленький': '120'}),
+    Menu('Лимон', '120', 'assets/images/лимон мак макаронс.jpg', 'Освежающий макарон с лимонной начинкой', '4.8', sizes: {'Большой': '210', 'Маленький': '120'}),
+    Menu('Фисташка-малина', '210', 'assets/images/фисташка малина мкаронс.jpg', 'Фисташковый макарон с малиновой начинкой', '4.8', sizes: {'Большой': '210', 'Маленький': '120'}),
+    Menu('Голубика-смородина', '210', 'assets/images/голубика.jpg', 'Макарон с начинкой из голубики и смородины', '4.8', sizes: {'Большой': '210', 'Маленький': '120'}),
+    Menu('Орео', '210', 'assets/images/какойто.jpg', 'Шоколадный макарон с начинкой из печенья Орео', '4.8', sizes: {'Большой': '210', 'Маленький': '120'}),
+    Menu('Баунти', '210', 'assets/images/баунти макаронс.jpg', 'Кокосовый макарон с шоколадной начинкой', '4.8', sizes: {'Большой': '210', 'Маленький': '120'}),
+    Menu('Шоколад-нутелла', '210', 'assets/images/шоколад-нутелла макаронс.jpg', 'Шоколадный макарон с начинкой из нутеллы', '4.8', sizes: {'Большой': '210', 'Маленький': '120'}),
   ];
-  static List<Menu> hotCoffee =[
-    Menu('Hot Coffee', 'Arabic coffee', '5.45', 'images/coffee.png','Hot coffee is a classic and popular beverage made by brewing roasted coffee beans with hot water. It can be enjoyed black or with milk and sugar.','4.9'),
-    Menu('Hot Coffee', 'With nothing', '2.45', 'images/hotCoffee2.png','Hot coffee is a classic and popular beverage made by brewing roasted coffee beans with hot water. It can be enjoyed black or with milk and sugar.','4.5'),
-    Menu('Hot Coffee', 'With milk', '3.45', 'images/hotCoffee3.png','Hot coffee is a classic and popular beverage made by brewing roasted coffee beans with hot water. It can be enjoyed black or with milk and sugar.','4.8'),
-
+  static List<Menu> Madlens = [
+    Menu('Ванильный', '120', 'assets/images/мадлен ванильный.jpg', 'Традиционный французский мадлен с нежным вкусом', '4.9'),
+    Menu('Шоколадный', '120', 'assets/images/мадлен шоколадный.jpg', 'Мадлен с добавлением шоколада', '4.5'),
+    Menu('Лимон', '120', 'assets/images/мадлен лимон мак.jpg', 'Мадлен с лимонной цедрой', '4.8'),
+    Menu('Баунти', '120', 'assets/images/мадлен баунти.jpg', 'Мадлен с кокосовой начинкой', '4.8'),
+    Menu('Манго-маракуйя', '120', 'assets/images/мадлен манго маракуйя.jpg', 'Мадлен с тропическими фруктами', '4.8'),
+    Menu('Кукис', '120', 'assets/images/мадлен кукис.jpg', 'Мадлен с печеньем', '4.8'),
+    Menu('Нутелла', '120', 'assets/images/мадлен-нутелла.jpg', 'Мадлен с нутеллой', '4.8'),
   ];
-  static List<Menu> latte =[
-    Menu('Latte', 'With Cow Milk', '2.8', 'images/latte.png','Latte is a coffee drink made with espresso and steamed milk.It is often topped with a small amount of milk foam.','5'),
-    Menu('Latte', 'Iced latte coffee', '2.8', 'images/latte2.png','Latte is a coffee drink made with espresso and steamed milk.It is often topped with a small amount of milk foam.','4.8'),
-    Menu('Latte', 'Iced latte coffee', '2.8', 'images/latte3.png','Latte is a coffee drink made with espresso and steamed milk.It is often topped with a small amount of milk foam.','4.9'),
-    Menu('Latte', 'With Cow Milk', '2.8', 'images/latte4.png','Latte is a coffee drink made with espresso and steamed milk.It is often topped with a small amount of milk foam.','4.75'),
-    Menu('Latte', 'Iced Vanilla Latte Recipe', '2.8', 'images/latte5.png','Latte is a coffee drink made with espresso and steamed milk.It is often topped with a small amount of milk foam.','4.3'),
-
+  static List<Menu> Croissants = [
+    Menu('Классический', '290', 'assets/images/курасан классический.jpg', 'Традиционный французский круассан', '5.0'),
+    Menu('Шоколад-банан', '290', 'assets/images/курасан шоко банан.jpg', 'Круассан с шоколадной и банановой начинкой', '4.8'),
+    Menu('Миндальный', '290', 'assets/images/миндальный курасан.jpg', 'Круассан с миндальной начинкой', '4.9'),
+    Menu('Клубника-ваниль', '290', 'assets/images/курасан клубника ваниль.jpg', 'Круассан с клубничной и ванильной начинкой', '4.75'),
+    Menu('Баунти', '290', 'assets/images/купасан баунти.jpg', 'Круассан с кокосовой начинкой', '4.75'),
   ];
-  static List<Menu> coldCoffee =[
-    Menu('Cold Coffee', 'With Cow Milk', '2.8', 'images/coldCoffee1.png','Cold coffee, also known as iced coffee, is a refreshing beverage made by chilling brewed coffee and serving it over ice. It can be sweetened and flavored to taste.','4.8'),
-    Menu('Cold Coffee', 'With Cow Milk ', '2.8', 'images/coldCoffee2.png','Cold coffee, also known as iced coffee, is a refreshing beverage made by chilling brewed coffee and serving it over ice. It can be sweetened and flavored to taste.','4.55'),
-    Menu('Cold Coffee', 'With Oreo', '2.8', 'images/coldCoffee3.png','Cold coffee, also known as iced coffee, is a refreshing beverage made by chilling freshly brewed coffee and serving it over ice. Perfect for hot summer days or as a revitalizing pick-me-up, cold coffee offers the familiar taste of coffee with a cool and invigorating twist. Whether enjoyed black or with a splash of milk and sweetener, cold coffee provides a delightful burst of flavor and refreshment','4.5'),
-
+  static List<Menu> Cheesecakes = [
+    Menu('Клубничный', '300', 'assets/images/чизкейк клубничный.jpg', 'Классический чизкейк с клубничным топпингом', '4.8'),
+    Menu('Шоколадный Сан-Себастьян', '300', 'assets/images/чизкейк шоколадный сан себастьян.jpg', 'Шоколадный чизкейк с насыщенным вкусом', '4.55'),
+    Menu('Кокосовый', '300', 'assets/images/чизкейк кокосовый.jpg', 'Чизкейк с кокосовой начинкой', '4.5'),
+    Menu('Сникерс', '300', 'assets/images/чизкейк сникерс.jpg', 'Чизкейк с начинкой из карамели и арахиса', '4.5'),
   ];
-  static List<Menu> cakes  =[
-    Menu('Cake', 'Cake with milk and strawberries', '8.20', 'images/cake.png','A strawberry cake is a light and fluffy sponge cake infused with the sweetness of strawberries. Layers of moist cake are filled with fresh strawberry filling and frosted with creamy frosting, creating a deliciously indulgent treat. Perfect for any celebration, its topped with fresh strawberries for a delightful finish.','4'),
-    Menu('Cake', 'With chocolate', '5.14', 'images/cake2.png','Chocolate cake is a decadent dessert made with chocolate, flour, sugar, eggs,and other ingredients. It can be layered with chocolate frosting and decorated with chocolate shavings or sprinkles.','4.9'),
-    Menu('CupCake', 'With Caramel', '6.14', 'images/CupCake.png','A cupcake is a small cake designed to serve one person, usually baked in a small,thin paper or aluminum cup. They are often topped with frosting and decorative sprinkles.','4.6'),
-    Menu('Brownies', 'With Chocolate', '10.14', 'images/brownies.png','Brownies are dense, fudgy, and rich squares of chocolate goodness. '
-        'They are typically made with cocoa powder, flour, sugar, eggs, butter, and chocolate chips or chunks.','4.7'),
-    Menu('Donut', 'With Chocolate', '10.14', 'images/donut.png','A donut is a type of fried dough confection or dessert food. '
-        'It is popular in many countries and is prepared in various forms as a sweet snack that can be homemade or purchased in bakeries.','4.8'),
 
+  static List<Menu> Coffee = [
+    Menu('Флет уайт', '150', 'assets/images/кофе флет уайт.jpg', 'Классический американо', '4.8'),
+    Menu('Капучино', '200', 'assets/images/кофе-капучино.jpg', 'Капучино с нежной молочной пенкой', '4.55'),
+    Menu('Латте', '200', 'assets/images/кофе латте.jpg', 'Латте с большим количеством молока', '4.5'),
+    Menu('Раф фундук', '250', 'assets/images/кофе раф фундук.jpg', 'Раф кофе с ванильным сиропом', '4.7'),
   ];
-  static List<Menu>popularList=[
-    Menu('Cappuccino', 'With Oat Milk', '4.20', 'images/capp.png','Cappuccino is an espresso-based coffee drink that originated in Italy,and is traditionally prepared with equal parts double espresso, steamed milk, and steamed milk foam.','4.8'),
-    Menu('Cold Coffee', 'With Cow Milk', '2.8', 'images/coldCoffee1.png',' Cold coffee, also known as iced coffee, is a refreshing beverage made by chilling brewed coffee and serving it over ice. It can be sweetened and flavored to taste. ','4.5'),
-    Menu('Latte', 'With Cow Milk', '2.8', 'images/latte4.png','Latte is a coffee drink made with espresso and steamed milk.It is often topped with a small amount of milk foam.','4.87'),
-    Menu('Hot Coffee', 'With milk', '3.45', 'images/hotCoffee3.png','Hot coffee is a classic and popular beverage made by brewing roasted coffee beans with hot water. It can be enjoyed black or with milk and sugar.','4.8'),
-    Menu('Latte', 'Iced Vanilla Latte Recipe', '2.8', 'images/latte5.png','Latte is a coffee drink made with espresso and steamed milk.It is often topped with a small amount of milk foam.','4.6'),
-    Menu('Cold Coffee', 'With Oreo', '2.8', 'images/coldCoffee3.png','Cold coffee, also known as iced coffee, is a refreshing beverage made by chilling brewed coffee and serving it over ice. It can be sweetened and flavored to taste. ','4.9'),
+
+  static List<Menu> Drinks = [
+    Menu('Клубника-апельсин', '290', 'assets/images/лимонад-клубника-апельсин.jpg', 'Освежающий лимонад с клубникой и апельсином', '4.8'),
+    Menu('Маракуя', '290', 'assets/images/лимонад-маракуя.jpg', 'Лимонад с маракуйей', '4.55'),
+    Menu('Грейпфрутовый', '290', 'assets/images/лимонадгрейпфрутовый.jpg', 'Лимонад с грейпфрутом', '4.5'),
+    Menu('Мохито', '290', 'assets/images/лимонад мохито.jpg', 'Освежающий лимонад с мятой и лаймом', '4.5'),
+  ];
+  static List<Menu> popularList = [
+    Menu('Чизкейк-клубника', '210', 'assets/images/клубника-чизкейк макаронс.jpg', 'Нежный макарон с начинкой из чизкейка и свежей клубники', '4.8'),
+    Menu('Шоколадный', '290', 'assets/images/миндальный курасан.jpg', 'Круассан с шоколадной начинкой', '4.5'),
+    Menu('Классический', '300', 'assets/images/клубника.jpg', 'Классический чизкейк с нежным сливочным вкусом', '4.87'),
+    Menu('Капучино', '200', 'assets/images/кофе-капучино.jpg', 'Капучино с нежной молочной пенкой', '4.8'),
+    Menu('Маракуя', '290', 'assets/images/лимонад-маракуя.jpg', 'Лимонад с маракуйей', '4.6'),
   ];
 
 }

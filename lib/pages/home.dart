@@ -22,17 +22,18 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  List<Menu>list=Menu.Cappuccino; // The list that will show after we click to the item in the list
+  List<Menu>list=Menu.Macarons; // The list that will show after we click to the item in the list
 
   bool TextColor=false; // To change the color of the text if we click to the button
 
 
   List coffeeType=[
 
-    ['Cappuccino',true,],
-    ['Hot Coffee',false,],
-    ['Latte',false,],
-    ['Cold Coffee',false,],
+    ['Macarons',true,],
+    ['Madlens',false,],
+    ['Croissants',false,],
+    ['Cheesecakes',false,],
+    ['Coffee',false,],
   ];
 
 
@@ -44,10 +45,11 @@ class _HomeState extends State<Home> {
       }
 
       coffeeType[index][1]=true;
-      if(coffeeType[index][0]=='Cappuccino')list=Menu.Cappuccino;
-      else if(coffeeType[index][0]=='Hot Coffee')list=Menu.hotCoffee;
-      else if(coffeeType[index][0]=='Latte')list=Menu.latte;
-      else if(coffeeType[index][0]=='Cold Coffee')list=Menu.coldCoffee;
+      if(coffeeType[index][0]=='Macarons')list=Menu.Macarons;
+      else if(coffeeType[index][0]=='Madlens')list=Menu.Madlens;
+      else if(coffeeType[index][0]=='Croissants')list=Menu.Croissants;
+      else if(coffeeType[index][0]=='Cheesecakes')list=Menu.Cheesecakes;
+      else if(coffeeType[index][0]=='Coffee')list=Menu.Coffee;
     });
 
 
@@ -215,13 +217,11 @@ class _HomeState extends State<Home> {
       ),
 
       body:SingleChildScrollView(
-
         child:Column(
           children: [
             const SizedBox(height: 30,),
             const TitleW(),
             const SizedBox(height: 10,),
-            const SearchBox(),
             Container(
               width: double.infinity,
               height: 40,
@@ -235,12 +235,9 @@ class _HomeState extends State<Home> {
                       onTap: (){
                         coffeeTypeSelected(index);
                       },
-
                     );
                   }
-
               ),
-
             ),
             const SizedBox(height: 10,),
             Cards(list),
@@ -272,7 +269,7 @@ class _HomeState extends State<Home> {
 
                   padding: EdgeInsets.only(left: 10),
 
-                  child:Text('Sweets',
+                  child:Text('Drinks',
                     style:TextStyle(
                       fontSize: 20,
                       color: Colors.white,
@@ -281,7 +278,7 @@ class _HomeState extends State<Home> {
                   ,)
             ),
             const SizedBox(height:5),
-            Cards(Menu.cakes),
+            Cards(Menu.Drinks), // The drinks list
 
 
 
@@ -295,35 +292,19 @@ class _HomeState extends State<Home> {
   }
 
 
-  AppBar appBar()  { // App Bar function that return AppBar
+  AppBar appBar() {
     return AppBar(
       backgroundColor: const Color.fromRGBO(33, 35, 37, 1),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.menu, color: Color.fromRGBO(151, 154, 157, 1)),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            ),
-          ),
-          Container(
-            height: 50,
-            width: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: const Color.fromRGBO(82, 85, 90, 1), width: 2),
-              color: Colors.white,
-              image: const DecorationImage(
-                image: AssetImage('images/man.jpg'),
-                fit: BoxFit.cover
-              )
-            ),
-          )
-        ]
+      elevation: 0.0,
+      title: const Text(
+        'Macaronnaya',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
       ),
+      centerTitle: true,
     );
   }
 }

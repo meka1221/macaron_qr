@@ -12,7 +12,7 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
-  String _selectedSize = 'Small';
+  String _selectedSize = 'Большой';
   String _deliveryType = 'pickup';
   String? _selectedCafe;
   final _addressController = TextEditingController();
@@ -22,6 +22,13 @@ class _DetailsPageState extends State<DetailsPage> {
     {'name': 'Кофейня на Лиговском', 'address': 'Лиговский пр. 30'},
     {'name': 'Кофейня на Московском', 'address': 'Московский пр. 50'},
   ];
+
+  String get _currentPrice {
+    if (widget.item.sizes != null) {
+      return widget.item.sizes![_selectedSize] ?? widget.item.price!;
+    }
+    return widget.item.price!;
+  }
 
   void _showOrderConfirmation() {
     showDialog(
@@ -205,192 +212,127 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(33, 35, 37, 1),
-      appBar: AppBar(
-        backgroundColor: Color.fromRGBO(33, 35, 37, 1),
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
+      backgroundColor: const Color.fromRGBO(33, 35, 37, 1),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Container(
-                      height: 300,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(widget.item.image!),
-                          fit: BoxFit.contain,
-                        ),
-                      ),
+                Container(
+                  height: 300,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(widget.item.image!),
+                      fit: BoxFit.cover,
                     ),
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          //The title
-
-                          Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.item.category!,
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(213, 122, 67, 1),
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-
-                                //The star
-
-                                Row(
-                                  children: [
-                                    const Icon(Icons.star, color: Colors.amber),
-                                    Text(
-                                      widget.item.rating!,
-                                      style: const TextStyle(
-                                        color: Color.fromRGBO(33, 35, 37, 1),
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-
-                                //The description
-
-                                const Text(
-                                  'Description',
-                                  style: TextStyle(
-                                    color: Color.fromRGBO(33, 35, 37, 1),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  widget.item.description!,
-                                  style: const TextStyle(
-                                    color: Color.fromRGBO(33, 35, 37, 0.8),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 10),
-                                const Text(
-                                  'Size',
-                                  style: TextStyle(
-                                    color: Color.fromRGBO(33, 35, 37, 1),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 120,
-                                      height: 40,
-                                      margin: const EdgeInsets.only(right: 10),
-                                      decoration: BoxDecoration(
-                                        color: _selectedSize == 'Small' 
-                                            ? const Color.fromRGBO(209, 120, 66, 1)
-                                            : const Color.fromRGBO(33, 35, 37, 1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: TextButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _selectedSize = 'Small';
-                                          });
-                                        },
-                                        child: Text(
-                                          'Small',
-                                          style: TextStyle(
-                                            color: _selectedSize == 'Small' 
-                                                ? Colors.white
-                                                : Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 120,
-                                      height: 40,
-                                      decoration: BoxDecoration(
-                                        color: _selectedSize == 'Large'
-                                            ? const Color.fromRGBO(209, 120, 66, 1)
-                                            : const Color.fromRGBO(33, 35, 37, 1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: TextButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _selectedSize = 'Large';
-                                          });
-                                        },
-                                        child: Text(
-                                          'Large',
-                                          style: TextStyle(
-                                            color: _selectedSize == 'Large'
-                                                ? Colors.white
-                                                : Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Buy button
-                          Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Container(
-                              width: double.infinity,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: const Color.fromRGBO(209, 120, 66, 1),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: TextButton(
-                                onPressed: _showOrderConfirmation,
-                                child: const Text(
-                                  'Купить',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
+                ),
+                Positioned(
+                  top: 40,
+                  left: 20,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
                 ),
               ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.item.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.item.description!,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  if (widget.item.sizes != null) ...[
+                    const Text(
+                      'Размер',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        for (var size in widget.item.sizes!.keys)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: ChoiceChip(
+                              label: Text(
+                                size,
+                                style: TextStyle(
+                                  color: _selectedSize == size
+                                      ? Colors.white
+                                      : Colors.grey,
+                                ),
+                              ),
+                              selected: _selectedSize == size,
+                              onSelected: (selected) {
+                                if (selected) {
+                                  setState(() {
+                                    _selectedSize = size;
+                                  });
+                                }
+                              },
+                              backgroundColor: const Color.fromRGBO(51, 54, 57, 1),
+                              selectedColor: const Color.fromRGBO(209, 120, 66, 1),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '$_currentPrice сом',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _showOrderConfirmation,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromRGBO(209, 120, 66, 1),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 15,
+                          ),
+                        ),
+                        child: const Text(
+                          'Добавить в корзину',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

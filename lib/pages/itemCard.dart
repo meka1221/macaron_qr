@@ -29,18 +29,15 @@ class _ItemCardState extends State<ItemCard> {
                 margin: const EdgeInsets.all(20),
                 height: 470,
                 width: 250,
-
-                //The box
-
                 decoration: BoxDecoration(
-                    color:  const Color.fromRGBO(33, 35, 37, 1),
+                    color: const Color.fromRGBO(33, 35, 37, 1),
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.5),
                         spreadRadius: 5,
                         blurRadius: 7,
-                        offset:const Offset(0, 3),
+                        offset: const Offset(0, 3),
                       ),
                     ]
                 ),
@@ -99,7 +96,7 @@ class _ItemCardState extends State<ItemCard> {
                         child:Row(
                           children: [
                             const SizedBox(width: 15,),
-                            Text(widget.item.category!,style:const TextStyle(color: Colors.white,fontSize: 20),),
+                            Text(widget.item.title!,style:const TextStyle(color: Colors.white,fontSize: 20),),
                           ],),
 
                       ),
@@ -134,7 +131,7 @@ class _ItemCardState extends State<ItemCard> {
                             Row(
                               children: [
                                 const SizedBox(width: 15,),
-                                const Text('\$ ',style: TextStyle(color: Color.fromRGBO(209, 120, 66, 1),fontSize: 20,fontWeight: FontWeight.bold),),
+                                const Text('\som ',style: TextStyle(color: Color.fromRGBO(209, 120, 66, 1),fontSize: 20,fontWeight: FontWeight.bold),),
                                 Text(widget.item.price!,style:const TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
                               ],),
 

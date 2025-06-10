@@ -21,7 +21,7 @@ class _SearchBoxState extends State<SearchBox> {
         decoration: InputDecoration(
             border: InputBorder.none,
             prefixIcon: Icon(Icons.search,color: Color.fromRGBO(151, 154, 157, 1) ,),
-            hintText: 'Find Your Coffee...',
+            hintText: 'Find Your Dessert...',
             hintStyle: TextStyle(
               color:  Color.fromRGBO(151, 154, 157, 1),
               fontWeight: FontWeight.normal,

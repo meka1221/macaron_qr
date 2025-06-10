@@ -17,16 +17,11 @@ class _CardsState extends State<Cards> {
     return Container(
       height: 370,
       width: double.infinity,
-
-
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
           for(int i=0;i<widget.list.length;i++)ItemCard(widget.list[i]),
-
         ],
-
-
       ),
     );
   }

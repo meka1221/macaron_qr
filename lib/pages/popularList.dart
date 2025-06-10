@@ -57,7 +57,7 @@ class _PopularItemState extends State<PopularItem> {
                       Column(
                         children: [
                           const SizedBox(height: 10,),
-                          Text(widget.item.category!,style:const TextStyle(color: Color.fromRGBO(213, 122, 67, 1),fontSize: 20),),
+                          Text(widget.item.title!,style:const TextStyle(color: Color.fromRGBO(213, 122, 67, 1),fontSize: 20),),
                           const SizedBox(height: 10,),
                           Container(
                             width: 200,
@@ -78,8 +78,8 @@ class _PopularItemState extends State<PopularItem> {
                         children: [
                           const SizedBox(height: 10,),
                           Container(
-                            margin:const  EdgeInsets.only(right: 10),
-                            child: Text('\$'+widget.item.price!,style:const TextStyle(color:  Color.fromRGBO(213, 122, 67, 1),fontSize: 18),),
+                            margin:const  EdgeInsets.only(right: 8),
+                            child: Text('\s'+widget.item.price!,style:const TextStyle(color:  Color.fromRGBO(213, 122, 67, 1),fontSize: 18),),
 
                           ),
 
