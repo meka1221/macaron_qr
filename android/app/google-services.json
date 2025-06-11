@@ -1,13 +1,14 @@
 {
   "project_info": {
-    "project_number": "349846829937",
-    "project_id": "macaron-1dfa3",
-    "storage_bucket": "macaron-1dfa3.firebasestorage.app"
+    "project_number": "1054085764584",
+    "firebase_url": "https://macaronqr-default-rtdb.firebaseio.com",
+    "project_id": "macaronqr",
+    "storage_bucket": "macaronqr.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:349846829937:android:c50653fd4a44cb26aa94d0",
+        "mobilesdk_app_id": "1:1054085764584:android:4ac4e1ba357108950ec05d",
         "android_client_info": {
           "package_name": "com.example.macaron_qr"
         }
@@ -15,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBInMRn_py_QVXtcuhFppPkfB2tzhRox9g"
+          "current_key": "AIzaSyBZXcDA8TAI3VPWHGuTxK7GXFKCR5Gm8bk"
         }
       ],
       "services": {

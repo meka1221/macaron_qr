@@ -1,15 +1,15 @@
-class Menu{
+class Menu {
+  final String id;
+  final String title;
+  final String price;
+  final String image;
+  final String description;
+  final String rating;
+  final Map<String, String>? sizes;
 
-  String? title;
-  String? price;
-  String? image;
-  String? description;
-  String? rating;
-  Map<String, String>? sizes; // Map of size to price
+  Menu(this.title, this.price, this.image, this.description, this.rating, {this.sizes}) : id = DateTime.now().millisecondsSinceEpoch.toString();
 
-  Menu(this.title,this.price,this.image,this.description,this.rating, {this.sizes});
-
-  String get name => title ?? '';
+  String get name => title;
 
   static List<Menu> Macarons = [
     Menu('Чизкейк-клубника', '210', 'assets/images/клубника-чизкейк макаронс.jpg', 'Нежный макарон с начинкой из чизкейка и свежей клубники', '4.8', sizes: {'Большой': '210', 'Маленький': '120'}),
@@ -65,5 +65,4 @@ class Menu{
     Menu('Капучино', '200', 'assets/images/кофе-капучино.jpg', 'Капучино с нежной молочной пенкой', '4.8'),
     Menu('Маракуя', '290', 'assets/images/лимонад-маракуя.jpg', 'Лимонад с маракуйей', '4.6'),
   ];
-
 }

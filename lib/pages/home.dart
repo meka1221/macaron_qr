@@ -1,3 +1,5 @@
+// lib/pages/home.dart
+
 import 'package:macaron_qr/models/menu.dart';
 import 'package:macaron_qr/pages/cards.dart';
 import 'package:macaron_qr/pages/name.dart';
@@ -12,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:macaron_qr/models/auth_provider.dart';
 import 'package:macaron_qr/pages/login_page.dart';
 import 'package:macaron_qr/pages/register_page.dart';
+import 'package:lottie/lottie.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -21,50 +24,45 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  List<Menu> list = Menu.Macarons;
+  bool TextColor = false;
 
-  List<Menu>list=Menu.Macarons; // The list that will show after we click to the item in the list
-
-  bool TextColor=false; // To change the color of the text if we click to the button
-
-
-  List coffeeType=[
-
-    ['Macarons',true,],
-    ['Madlens',false,],
-    ['Croissants',false,],
-    ['Cheesecakes',false,],
-    ['Coffee',false,],
+  List coffeeType = [
+    ['Macarons', true],
+    ['Madlens', false],
+    ['Croissants', false],
+    ['Cheesecakes', false],
+    ['Coffee', false],
   ];
 
-
-  void coffeeTypeSelected (int index){  // To change the list after the click
+  void coffeeTypeSelected(int index) {
 
     setState(() {
-      for(int i=0;i<coffeeType.length;i++){
-        coffeeType[i][1]=false;
+      for (int i = 0; i < coffeeType.length; i++) {
+        coffeeType[i][1] = false;
       }
 
-      coffeeType[index][1]=true;
-      if(coffeeType[index][0]=='Macarons')list=Menu.Macarons;
-      else if(coffeeType[index][0]=='Madlens')list=Menu.Madlens;
-      else if(coffeeType[index][0]=='Croissants')list=Menu.Croissants;
-      else if(coffeeType[index][0]=='Cheesecakes')list=Menu.Cheesecakes;
-      else if(coffeeType[index][0]=='Coffee')list=Menu.Coffee;
+      coffeeType[index][1] = true;
+      if (coffeeType[index][0] == 'Macarons') {
+        list = Menu.Macarons;
+      } else if (coffeeType[index][0] == 'Madlens') {
+        list = Menu.Madlens;
+      } else if (coffeeType[index][0] == 'Croissants') {
+        list = Menu.Croissants;
+      } else if (coffeeType[index][0] == 'Cheesecakes') {
+        list = Menu.Cheesecakes;
+      } else if (coffeeType[index][0] == 'Coffee') {
+        list = Menu.Coffee;
+      }
     });
-
-
   }
 
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      backgroundColor: const Color.fromRGBO(33, 35, 37, 1),//change the background color
-
-      appBar:appBar(),
-
+      backgroundColor: const Color.fromRGBO(33, 35, 37, 1),
+      appBar: appBar(),
       drawer: Drawer(
         backgroundColor: const Color.fromRGBO(33, 35, 37, 1),
         child: ListView(
@@ -77,31 +75,51 @@ class _HomeState extends State<Home> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: Colors.white, width: 2),
-                      image: const DecorationImage(
-                        image: AssetImage('images/man.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                  Consumer<AuthProvider>(
+                    builder: (context, authProvider, _) {
+                      final user = authProvider.user;
+                      return CircleAvatar(
+                        radius: 30,
+                        backgroundColor: Colors.white,
+                        backgroundImage: user?.avatarUrl != null ? NetworkImage(user!.avatarUrl!) : null,
+                        child: user?.avatarUrl == null
+                            ? Icon(Icons.person, size: 30, color: const Color.fromRGBO(209, 120, 66, 1))
+                            : null,
+                      );
+                    },
                   ),
                   const SizedBox(height: 10),
                   Consumer<AuthProvider>(
                     builder: (context, authProvider, _) {
+                      print('Building user name widget. isAuthenticated: ${authProvider.isAuthenticated}, user: ${authProvider.user?.name}');
+                      final userName = authProvider.isAuthenticated && authProvider.user != null
+                          ? authProvider.user!.name
+                          : 'Гость';
+                      print('Displaying user name: $userName');
                       return Text(
-                        authProvider.isAuthenticated 
-                            ? authProvider.user?.name ?? 'User'
-                            : 'Гость',
+                        userName,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       );
+                    },
+                  ),
+
+                  Consumer<AuthProvider>(
+                    builder: (context, authProvider, _) {
+                      if (authProvider.isAuthenticated && authProvider.user != null) {
+                        print('Building points widget. Points: ${authProvider.user?.points}');
+                        return Text(
+                          'Баллы: ${authProvider.user!.points}',
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
                     },
                   ),
                 ],
@@ -120,10 +138,7 @@ class _HomeState extends State<Home> {
                         ),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const FavoritesPage()),
-                          );
+                          Navigator.pushNamed(context, '/favorites');
                         },
                       ),
                       ListTile(
@@ -135,6 +150,17 @@ class _HomeState extends State<Home> {
                         onTap: () {
                           Navigator.pop(context);
                           // TODO: Navigate to profile page
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.coffee, color: Colors.white),
+                        title: const Text(
+                          'Список кофеен',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.pushNamed(context, '/cafes');
                         },
                       ),
                       ListTile(
@@ -189,7 +215,6 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(33, 35, 37, 1),
         unselectedItemColor: Colors.white,
@@ -215,82 +240,85 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(icon: Icon(CupertinoIcons.heart), label: 'Favorite'),
         ],
       ),
-
-      body:SingleChildScrollView(
-        child:Column(
+      body: SingleChildScrollView(
+        child: Column(
           children: [
-            const SizedBox(height: 30,),
+            const SizedBox(height: 30),
             const TitleW(),
-            const SizedBox(height: 10,),
+            const SizedBox(height: 10),
+            // Кнопка QR-кода
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Container(
+                width: double.infinity,
+                height: 150,
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(33, 35, 37, 1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Lottie.asset(
+                  'assets/animations/qrCode.json',
+                  fit: BoxFit.contain,
+                  repeat: true,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             Container(
               width: double.infinity,
               height: 40,
-              child:ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount:coffeeType.length,
-                  itemBuilder: (context, index) {
-                    return Name(
-                      coffeeType: coffeeType[index][0],
-                      isSelected: coffeeType[index][1],
-                      onTap: (){
-                        coffeeTypeSelected(index);
-                      },
-                    );
-                  }
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: coffeeType.length,
+                itemBuilder: (context, index) {
+                  return Name(
+                    coffeeType: coffeeType[index][0],
+                    isSelected: coffeeType[index][1],
+                    onTap: () {
+                      coffeeTypeSelected(index);
+                    },
+                  );
+                },
               ),
             ),
-            const SizedBox(height: 10,),
+            const SizedBox(height: 10),
             Cards(list),
-
-            const SizedBox(height: 5,),
-
+            const SizedBox(height: 5),
             const Align(
-
-                alignment: Alignment.topLeft,
-
-                child:Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child:Text('Popular',style: TextStyle(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: Text(
+                  'Popular',
+                  style: TextStyle(
                     fontSize: 20,
                     color: Colors.white,
-                  ),) ,)
-
+                  ),
+                ),
+              ),
             ),
-
-            for(int i=0;i<Menu.popularList.length;i++)PopularItem(Menu.popularList[i]),
-
-            const SizedBox(height: 10,),
-
+            for (int i = 0; i < Menu.popularList.length; i++) PopularItem(Menu.popularList[i]),
+            const SizedBox(height: 10),
             const Align(
-
-                alignment: Alignment.topLeft,
-
-                child:Padding(
-
-                  padding: EdgeInsets.only(left: 10),
-
-                  child:Text('Drinks',
-                    style:TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    )
-                    ,)
-                  ,)
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: Text(
+                  'Drinks',
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
-            const SizedBox(height:5),
+            const SizedBox(height: 5),
             Cards(Menu.Drinks), // The drinks list
-
-
-
-
           ],
         ),
       ),
-
-
     );
   }
-
 
   AppBar appBar() {
     return AppBar(
@@ -305,6 +333,14 @@ class _HomeState extends State<Home> {
         ),
       ),
       centerTitle: true,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.shopping_cart, color: Colors.white),
+          onPressed: () {
+            Navigator.pushNamed(context, '/cart');
+          },
+        ),
+      ],
     );
   }
 }

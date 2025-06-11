@@ -1,7 +1,13 @@
+// lib/pages/register_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:macaron_qr/models/auth_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io'; // Для File
+import 'package:image_picker/image_picker.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -18,24 +24,39 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
 
+  File? _avatarImage;
+
+
+  Future<void> _pickAvatar() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
+    if (pickedFile != null) {
+      setState(() {
+        _avatarImage = File(pickedFile.path);
+      });
+    }
+  }
+
+
   bool _isValidEmail(String email) {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 
+
   String _getErrorMessage(FirebaseAuthException e) {
     switch (e.code) {
       case 'email-already-in-use':
-        return 'Этот email уже зарегистрирован';
+        return 'Этот email уже зарегистрирован. Пожалуйста, войдите или используйте другой email.';
       case 'invalid-email':
-        return 'Неверный формат email';
+        return 'Неверный формат email.';
       case 'weak-password':
-        return 'Пароль слишком слабый';
+        return 'Пароль слишком слабый (мин. 6 символов).';
       case 'operation-not-allowed':
-        return 'Регистрация временно недоступна';
+        return 'Регистрация временно недоступна. Пожалуйста, попробуйте позже.';
       case 'network-request-failed':
-        return 'Проверьте подключение к интернету';
+        return 'Проверьте подключение к интернету.';
       default:
-        return e.message ?? 'Произошла ошибка при регистрации';
+        return e.message ?? 'Произошла неизвестная ошибка при регистрации.';
     }
   }
 
@@ -63,6 +84,37 @@ class _RegisterPageState extends State<RegisterPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Center(
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 48,
+                        backgroundColor: const Color.fromRGBO(209, 120, 66, 1),
+                        backgroundImage: _avatarImage != null ? FileImage(_avatarImage!) : null,
+                        child: _avatarImage == null
+                            ? const Icon(Icons.person, size: 48, color: Colors.white)
+                            : null,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: InkWell(
+                          onTap: _pickAvatar,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color.fromRGBO(209, 120, 66, 1),
+                              shape: BoxShape.circle,
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            child: const Icon(Icons.edit, color: Colors.white, size: 20),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
                 TextFormField(
                   controller: _nameController,
                   style: const TextStyle(color: Colors.white),
@@ -84,6 +136,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 const SizedBox(height: 20),
+
                 TextFormField(
                   controller: _emailController,
                   style: const TextStyle(color: Colors.white),
@@ -109,6 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 const SizedBox(height: 20),
+
                 TextFormField(
                   controller: _passwordController,
                   style: const TextStyle(color: Colors.white),
@@ -134,6 +188,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 const SizedBox(height: 20),
+
                 TextFormField(
                   controller: _confirmPasswordController,
                   style: const TextStyle(color: Colors.white),
@@ -159,6 +214,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 const SizedBox(height: 30),
+
                 ElevatedButton(
                   onPressed: _isLoading ? null : _register,
                   style: ElevatedButton.styleFrom(
@@ -187,7 +243,9 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+
   Future<void> _register() async {
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -195,20 +253,63 @@ class _RegisterPageState extends State<RegisterPage> {
     setState(() => _isLoading = true);
 
     try {
-      await context.read<AuthProvider>().register(
+      final authProvider = context.read<AuthProvider>();
+
+
+      await authProvider.register(
         _emailController.text.trim(),
         _passwordController.text,
         _nameController.text.trim(),
       );
-      if (mounted) {
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      }
-    } catch (e) {
-      if (mounted) {
-        String errorMessage = 'Произошла ошибка при регистрации';
-        if (e is FirebaseAuthException) {
-          errorMessage = _getErrorMessage(e);
+
+
+      final String? userId = authProvider.user?.id;
+
+
+      if (userId != null && _avatarImage != null) {
+        try {
+          final storageRef = FirebaseStorage.instance.ref();
+          final avatarsRef = storageRef.child("avatars/$userId.jpg");
+
+
+          await avatarsRef.putFile(_avatarImage!);
+
+          final String downloadUrl = await avatarsRef.getDownloadURL();
+
+
+          await FirebaseFirestore.instance.collection('users').doc(userId).update({
+            'avatarUrl': downloadUrl,
+          });
+          print('Avatar uploaded and URL saved to Firestore: $downloadUrl');
+        } on FirebaseException catch (e) {
+          print('Error uploading avatar: ${e.message}');
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Регистрация успешна, но не удалось загрузить аватар: ${e.message ?? e.code}'),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
         }
+      }
+
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Регистрация успешно завершена!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
+    } on FirebaseAuthException catch (e) {
+
+      if (mounted) {
+        String errorMessage = _getErrorMessage(e);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
@@ -216,7 +317,19 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         );
       }
+    } catch (e) {
+      // Перехват любых других неожиданных ошибок
+      if (mounted) {
+        print('Unexpected error during registration: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Произошла непредвиденная ошибка: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
+
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -232,4 +345,3 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 }
-

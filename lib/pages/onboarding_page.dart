@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:macaron_qr/pages/home.dart';
 import 'package:macaron_qr/widgets/loading_animation.dart';
+import 'package:lottie/lottie.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -17,24 +18,19 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   final List<OnboardingItem> _items = [
     OnboardingItem(
-      image: 'assets/images/ферреро-роше макаронс.jpg',
-      title: 'Добро пожаловать в Macaron QR!',
-      description: 'Ваш идеальный помощник для заказа вкусных десертов и кофе',
+      image: 'assets/images/главная.jpg',
+      title: 'Maкаронная',
+      description: 'Добро пожаловать в Macaronnaya!',
     ),
     OnboardingItem(
-      image: 'assets/images/кофе латте.jpg',
+      lottie: 'assets/animations/Animation.limonad.json',
       title: 'Быстрый заказ',
       description: 'Выбирайте из широкого ассортимента макарон, десертов и кофе',
     ),
     OnboardingItem(
-      image: 'assets/images/чизкейк шоколадный сан себастьян.jpg',
+      lottie: 'assets/animations/Animation.curasan.json',
       title: 'Избранное',
       description: 'Сохраняйте любимые позиции в избранное для быстрого доступа',
-    ),
-    OnboardingItem(
-      image: 'assets/images/курасан классический.jpg',
-      title: 'Начните прямо сейчас!',
-      description: 'Создайте аккаунт или войдите, чтобы получить доступ ко всем функциям',
     ),
   ];
 
@@ -127,7 +123,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           : const Icon(
                               Icons.arrow_forward,
                               color: Colors.white,
-                              size: 30,
+                              size: 40,
                             ),
                     ),
                   ),
@@ -146,22 +142,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Widget _buildPage(OnboardingItem item, int index) {
-    final bool isTextOnTop = index.isOdd;
-    
-    return Padding(
-      padding: const EdgeInsets.all(40),
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          if (isTextOnTop) ...[
-            _buildTextContent(item),
-            const Spacer(),
-            _buildImage(item),
-          ] else ...[
-            _buildImage(item),
-            const Spacer(),
-            _buildTextContent(item),
-          ],
+          _buildImage(item),
+          const SizedBox(height: 40),
+          _buildTextContent(item),
         ],
       ),
     );
@@ -174,7 +162,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           item.title,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 28,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
@@ -184,7 +172,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           item.description,
           style: const TextStyle(
             color: Colors.grey,
-            fontSize: 16,
+            fontSize: 20,
           ),
           textAlign: TextAlign.center,
         ),
@@ -193,31 +181,26 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Widget _buildImage(OnboardingItem item) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Image.asset(
-        item.image,
+    if (item.lottie != null) {
+      return SizedBox(
         height: 300,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          print('Error loading image: ${item.image}');
-          print('Error: $error');
-          return Container(
-            height: 300,
-            width: double.infinity,
-            color: Colors.grey[800],
-            child: const Center(
-              child: Icon(
-                Icons.error_outline,
-                color: Colors.white,
-                size: 50,
-              ),
-            ),
-          );
-        },
-      ),
-    );
+        child: Lottie.asset(
+          item.lottie!,
+          fit: BoxFit.contain,
+        ),
+      );
+    } else if (item.image != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Image.asset(
+          item.image!,
+          height: 300,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 
   Widget _buildDot(int index) {
@@ -242,13 +225,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
 }
 
 class OnboardingItem {
-  final String image;
+  final String? image;
+  final String? lottie;
   final String title;
   final String description;
-
-  OnboardingItem({
-    required this.image,
-    required this.title,
-    required this.description,
-  });
+  OnboardingItem({this.image, this.lottie, required this.title, required this.description});
 } 

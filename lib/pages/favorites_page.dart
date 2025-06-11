@@ -17,16 +17,24 @@ class FavoritesPage extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Favorites',
+          'Избранное',
           style: TextStyle(color: Colors.white),
         ),
       ),
       body: Consumer<FavoritesProvider>(
         builder: (context, favoritesProvider, child) {
+
+          if (favoritesProvider.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(color: Color.fromRGBO(209, 120, 66, 1)),
+            );
+          }
+
+
           if (favoritesProvider.favorites.isEmpty) {
             return const Center(
               child: Text(
-                'No favorites yet',
+                'Пока нет избранных товаров.',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -34,6 +42,7 @@ class FavoritesPage extends StatelessWidget {
               ),
             );
           }
+
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -47,15 +56,27 @@ class FavoritesPage extends StatelessWidget {
                   contentPadding: const EdgeInsets.all(16),
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
+
+                    child: item.image != null && item.image!.startsWith('http')
+                        ? Image.network(
                       item.image!,
                       width: 60,
                       height: 60,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.broken_image, size: 60, color: Colors.grey),
+                    )
+                        : Image.asset(
+                      item.image!,
+                      width: 60,
+                      height: 60,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error_outline, size: 60, color: Colors.grey),
                     ),
                   ),
                   title: Text(
-                    item.name,
+                    item.title,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -63,7 +84,7 @@ class FavoritesPage extends StatelessWidget {
                     ),
                   ),
                   subtitle: Text(
-                    '${item.price} ₽',
+                    '${item.price} сом',
                     style: const TextStyle(
                       color: Color.fromRGBO(209, 120, 66, 1),
                       fontSize: 14,
@@ -75,7 +96,26 @@ class FavoritesPage extends StatelessWidget {
                       color: Color.fromRGBO(209, 120, 66, 1),
                     ),
                     onPressed: () {
-                      favoritesProvider.toggleFavorite(item);
+
+                      favoritesProvider.toggleFavorite(item).then((_) {
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(favoritesProvider.isFavorite(item)
+                                ? 'Товар добавлен в избранное!'
+                                : 'Товар удален из избранного!'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }).catchError((error) {
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Ошибка: ${error.toString()}'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      });
                     },
                   ),
                 ),
