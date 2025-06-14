@@ -4,6 +4,7 @@ import 'package:macaron_qr/models/cart_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:macaron_qr/models/auth_provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:macaron_qr/pages/home.dart';
 
 class CheckoutPage extends StatefulWidget {
   const CheckoutPage({super.key});
@@ -15,23 +16,17 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   final _formKey = GlobalKey<FormState>();
   final _addressController = TextEditingController();
-  String _selectedPaymentMethod = 'Картой курьеру';
+  String _selectedPaymentMethod = 'Картой';
   String _deliveryType = 'delivery';
   String? _selectedCafe;
 
   final List<Map<String, String>> cafes = [
-    {'name': 'Кофейня на Боконбаева',
-      'address': 'Бокн 183'},
-    {'name': 'Лавка на Джале',
-      'address': 'Тыналиева 1/3'},
-    {'name': 'Кофейня на Чуй',
-      'address': 'Чуй 1/2'},
-    {'name': 'Кофейня на Ала-Тоо',
-      'address': 'Ала-Тоо 3'},
-    {'name': 'Кофейня на Манаса',
-      'address': 'Манаса 50'},
-    {'name': 'Лавка на Asia Mall',
-      'address': 'пр.Манаса 50'},
+    {'name': 'Кофейня на Боконбаева', 'address': 'Бокн 183'},
+    {'name': 'Лавка на Джале', 'address': 'Тыналиева 1/3'},
+    {'name': 'Кофейня на Чуй', 'address': 'Чуй 1/2'},
+    {'name': 'Кофейня на Ала-Тоо', 'address': 'Ала-Тоо 3'},
+    {'name': 'Кофейня на Манаса', 'address': 'Манаса 50'},
+    {'name': 'Лавка на Asia Mall', 'address': 'пр.Манаса 50'},
   ];
 
   @override
@@ -41,17 +36,35 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Future<void> _submitOrder() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return; // Проверка валидации формы
+
     final cart = context.read<CartProvider>();
     final auth = context.read<AuthProvider>();
+
     if (!auth.isAuthenticated || auth.user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Пожалуйста, войдите в аккаунт для оформления заказа'), backgroundColor: Colors.red),
       );
       return;
     }
+
+    if (_deliveryType == 'delivery' && _addressController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Пожалуйста, введите адрес доставки'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    if (_deliveryType == 'pickup' && _selectedCafe == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Пожалуйста, выберите кофейню для самовывоза'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+
     try {
-      // Сохраняем заказ в Firestore
+
       final orderData = {
         'userId': auth.user!.id,
         'items': cart.items.map((item) => {
@@ -67,20 +80,31 @@ class _CheckoutPageState extends State<CheckoutPage> {
         'createdAt': FieldValue.serverTimestamp(),
       };
       await FirebaseFirestore.instance.collection('orders').add(orderData);
-      // Начисляем бонусы (5% от суммы заказа)
+
+
       final bonus = (cart.totalAmount * 0.05).round();
       final userRef = FirebaseFirestore.instance.collection('users').doc(auth.user!.id);
       await userRef.update({
         'points': FieldValue.increment(bonus),
       });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Заказ успешно оформлен! Бонусы начислены: $bonus'),
-          backgroundColor: const Color.fromRGBO(209, 120, 66, 1),
+          backgroundColor: const Color.fromRGBO(66, 209, 80, 1.0),
         ),
       );
+
+
       cart.clear();
-      Navigator.of(context).popUntil((route) => route.isFirst);
+
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => Home()),
+            (Route<dynamic> route) => false,
+      );
+
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Ошибка при оформлении заказа: $e'), backgroundColor: Colors.red),
@@ -136,6 +160,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       onChanged: (value) {
                         setState(() {
                           _deliveryType = value!;
+                          _selectedCafe = null; // Сбрасываем выбранную кофейню при смене на доставку
                         });
                       },
                       activeColor: const Color.fromRGBO(209, 120, 66, 1),
@@ -147,6 +172,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       onChanged: (value) {
                         setState(() {
                           _deliveryType = value!;
+                          _addressController.clear();
                         });
                       },
                       activeColor: const Color.fromRGBO(209, 120, 66, 1),
@@ -397,4 +423,4 @@ class UserQrPage extends StatelessWidget {
       ),
     );
   }
-} 
+}

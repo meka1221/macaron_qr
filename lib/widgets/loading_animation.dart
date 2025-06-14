@@ -15,7 +15,7 @@ class LoadingAnimation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Lottie.asset(
-        'assets/animations/loader.json',
+        'assets/animations/order_success.json',
         width: size,
         height: size,
         fit: BoxFit.contain,
